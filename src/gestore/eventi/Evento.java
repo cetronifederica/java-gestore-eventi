@@ -5,40 +5,23 @@ import java.time.format.DateTimeFormatter;
 
 public class Evento {
 	private static final DateTimeFormatter dataFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	LocalDate oggi = LocalDate.now();
+
 	// attributi
 
-	private String titolo, data;
-
+	private String titolo;
+	private LocalDate data;
 	private int nPostiPrenotati = 0;
 	private int nPostiTot;
-	LocalDate dataFromString;
+	LocalDate oggi = LocalDate.now();
 
 	// costruttore con eccezioni
-	public Evento(String titolo, String data, int nPostiTot) throws Exception {
-		boolean parametriValidi = true;
-		String eMessage = "I dati inseriti non sono validi";
+	public Evento(String titolo, LocalDate data, int nPostiTot) throws NullPointerException, IllegalArgumentException {
+		hasValidNPostiTot(nPostiTot);
+		hasValidData(data);
 
-		try {
-			hasValidNPostiTot(nPostiTot);
-		} catch (Exception e) {
-			parametriValidi = false;
-			eMessage += "\n" + e.getMessage();
-		}
-
-		try {
-			hasValidData(data);
-		} catch (Exception e) {
-			parametriValidi = false;
-			eMessage += "\n" + e.getMessage();
-		}
-if (parametriValidi) {
 		this.titolo = titolo;
 		this.data = data;
 		this.nPostiTot = nPostiTot;
-} else {
-	throw new Exception(eMessage);
-}
 	}
 
 	// getter e setter
@@ -51,11 +34,11 @@ if (parametriValidi) {
 		this.titolo = titolo;
 	}
 
-	public String getData() {
+	public LocalDate getData() {
 		return data;
 	}
 
-	public void setData(String data) throws IllegalArgumentException, NullPointerException {
+	public void setData(LocalDate data) throws IllegalArgumentException, NullPointerException {
 		this.data = data;
 	}
 
@@ -69,21 +52,26 @@ if (parametriValidi) {
 
 	// metodi
 
-	private void hasValidNPostiTot(int nPostiTot) throws Exception {
+	// controllo il numero di posti totali
+	private void hasValidNPostiTot(int nPostiTot) throws IllegalArgumentException {
 
-		if (nPostiTot <= 0)
-			throw new Exception("Il numero di persone non può avere un numero nullo o negativo");
+		if (nPostiTot <= 0) {
+			throw new IllegalArgumentException("Il numero di persone non può avere un numero nullo o negativo");
+		}
 	}
 
-	private void hasValidData(String data) throws Exception {
+	// controllo data
+	private void hasValidData(LocalDate data) throws NullPointerException, IllegalArgumentException {
 
-		dataFromString = LocalDate.parse(data, dataFormatter);
-
-		if (dataFromString.isBefore(LocalDate.now()))
-			throw new Exception("La data dell'evento non può essere precedente alla data di oggi");
+		if (data == null) {
+			throw new NullPointerException("La data non può essere nulla");
+		}
+		if (oggi.isAfter(LocalDate.now())) {
+			throw new IllegalArgumentException("La data dell'evento non può essere precedente alla data di oggi");
+		}
 	}
 
-	public void prenota(int nPosti) throws Exception {
+	public int prenota(int nPosti) throws Exception {
 		try {
 			hasValidData(this.data);
 		} catch (Exception e) {
@@ -92,14 +80,15 @@ if (parametriValidi) {
 
 		if ((nPostiPrenotati + nPosti) > nPostiTot) {
 			throw new IllegalArgumentException("Non ci sono posti disponibili.");
-		} else {
-			nPostiPrenotati += nPosti;
+		} else if ((nPostiPrenotati += nPosti) < nPostiTot) {
+
 			System.out.println("Il numero di posti richiesti è stato prenotato.");
 		}
+		return nPostiPrenotati++;
 
 	}
 
-	public void disdici(int nPosti) throws Exception {
+	public int disdici(int nPosti) throws Exception {
 		try {
 			hasValidData(this.data);
 		} catch (Exception e) {
@@ -109,15 +98,15 @@ if (parametriValidi) {
 		if (nPostiPrenotati < nPosti) {
 			throw new Exception("Non ci sono posti prenotati.");
 		} else {
-			nPostiPrenotati -= nPosti;
 			System.out.println("I posti inseriti sono stati disdetti.");
 		}
+		return nPostiPrenotati--;
 
 	}
 
 	@Override
 	public String toString() {
-		return "L'evento " + titolo + " organizzato in data " + data;
+		return "L'evento " + titolo + " organizzato in data " + dataFormatter.format(data);
 	}
 
 }
