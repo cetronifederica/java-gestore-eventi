@@ -15,7 +15,7 @@ public class Evento {
 	LocalDate dataFromString;
 
 	// costruttore con eccezioni
-	public Evento(String titolo, String data, int nPostiTot) throws IllegalArgumentException, NullPointerException {
+	public Evento(String titolo, String data, int nPostiTot) throws Exception {
 		boolean parametriValidi = true;
 		String eMessage = "I dati inseriti non sono validi";
 
@@ -32,11 +32,13 @@ public class Evento {
 			parametriValidi = false;
 			eMessage += "\n" + e.getMessage();
 		}
-
+if (parametriValidi) {
 		this.titolo = titolo;
 		this.data = data;
 		this.nPostiTot = nPostiTot;
-
+} else {
+	throw new Exception(eMessage);
+}
 	}
 
 	// getter e setter
@@ -67,25 +69,25 @@ public class Evento {
 
 	// metodi
 
-	private void hasValidNPostiTot(int nPostiTot) throws NullPointerException {
+	private void hasValidNPostiTot(int nPostiTot) throws Exception {
 
 		if (nPostiTot <= 0)
-			throw new NullPointerException("Il numero di persone non può avere un numero nullo o negativo");
+			throw new Exception("Il numero di persone non può avere un numero nullo o negativo");
 	}
 
 	private void hasValidData(String data) throws Exception {
 
 		dataFromString = LocalDate.parse(data, dataFormatter);
 
-		if (dataFromString.isAfter(LocalDate.now()))
+		if (dataFromString.isBefore(LocalDate.now()))
 			throw new Exception("La data dell'evento non può essere precedente alla data di oggi");
 	}
 
-	public void prenota(int nPosti) throws NullPointerException, IllegalArgumentException {
+	public void prenota(int nPosti) throws Exception {
 		try {
 			hasValidData(this.data);
 		} catch (Exception e) {
-			throw new NullPointerException("Non è possibile prenotare posti per un evento già passato");
+			throw new Exception("Non è possibile prenotare posti per un evento già passato");
 		}
 
 		if ((nPostiPrenotati + nPosti) > nPostiTot) {
@@ -97,15 +99,15 @@ public class Evento {
 
 	}
 
-	public void disdici(int nPosti) throws NullPointerException, IllegalArgumentException {
+	public void disdici(int nPosti) throws Exception {
 		try {
 			hasValidData(this.data);
 		} catch (Exception e) {
-			throw new NullPointerException("Non è possibile disdire posti in un evento già passato");
+			throw new Exception("Non è possibile disdire posti in un evento già passato");
 		}
 
 		if (nPostiPrenotati < nPosti) {
-			throw new IllegalArgumentException("Non ci sono posti prenotati.");
+			throw new Exception("Non ci sono posti prenotati.");
 		} else {
 			nPostiPrenotati -= nPosti;
 			System.out.println("I posti inseriti sono stati disdetti.");
