@@ -7,94 +7,202 @@ public class MainTest {
 
 	public static void main(String[] args) throws Exception {
 		Scanner scan = new Scanner(System.in);
+
+		Conferenza nuovaConf = null;
 		Evento nuovoEvento = null;
+		String eventoConferenza = "";
+		Oratore nuovoOratore = null;
 		boolean continua = true;
-		System.out.println("Inserisci un nuovo evento");
 
 		do {
-			System.out.println("Inserisci il nome dell'evento: ");
-			String nomeEvento = scan.nextLine();
-			System.out.println("Inserisci la data dell'evento: ");
-			System.out.println("Giorno: ");
-			int giornoEvento = scan.nextInt();
-			System.out.println("Mese: ");
-			int meseEvento = scan.nextInt();
-			System.out.println("Anno: ");
-			int annoEvento = scan.nextInt();
+			System.out.println("Crea nuovo evento: ");
+			System.out.print("Inserisci il nome dell'evento: ");
+			String nomeInput = scan.nextLine();
+
+			System.out.print("Inserisci la data dell'evento: \nGiorno: ");
+			int giornoEvento = Integer.parseInt(scan.nextLine());
+
+			System.out.print("Mese: ");
+			int meseEvento = Integer.parseInt(scan.nextLine());
+
+			System.out.print("Anno: ");
+			int annoEvento = Integer.parseInt(scan.nextLine());
 
 			LocalDate dataEvento = LocalDate.of(annoEvento, meseEvento, giornoEvento);
 
 			System.out.print("Inserisci il numero di posti totali: ");
-			int nPostiTotInput = scan.nextInt();
+			int numeroPostiTotaliInput = Integer.parseInt(scan.nextLine());
 
-			try {
-				nuovoEvento = new Evento(nomeEvento, dataEvento, nPostiTotInput);
-				continua = false;
+			System.out.println("É un evento generico o una conferenza?");
+			System.out.println("(1)Evento \n(2)Conferenza");
+			eventoConferenza = scan.nextLine();
 
-			} catch (NullPointerException npe) {
-				System.out.println("Errore nella creazione dell'evento: " + npe.getMessage());
+			if (eventoConferenza.equalsIgnoreCase("1")) {
+				try {
 
-			} catch (IllegalArgumentException iae) {
-				System.out.println("Errore nella creazione dell'evento: " + iae.getMessage());
-			} catch (Exception e) {
-				System.out.println("Errore: " + e.getMessage());
-			}
-		} while (continua);
-
-		do {
-			System.out.println("Vuoi prenotare o disdire dei posti per questo evento?");
-			System.out.println("Digita 1 se vuoi prenotare, 2 se vuoi disdire, 0 (zero) se vuoi uscire");
-			String sceltaUtente = scan.nextLine();
-
-			try {
-				switch (sceltaUtente) {
-				case "1":
-					System.out.println("Quanti posti vuoi prenotare?");
-					int nPostiDaPrenot = Integer.parseInt(scan.nextLine());
-
-					nuovoEvento.prenota(nPostiDaPrenot);
-
-					System.out.println("Hai effettuato " + nPostiDaPrenot + " prenotazioni");
-					System.out.println("Il totale di posti prenotati é ora a: " + nuovoEvento.getnPostiPrenotati());
-
-					continua = true;
-
-					break;
-
-				case "2":
-					System.out.println("Quanti posti vuoi disdire?");
-					int nPostiDaDisdire = Integer.parseInt(scan.nextLine());
-
-					nuovoEvento.disdici(nPostiDaDisdire);
-
-					System.out.println("Hai effettuato " + nPostiDaDisdire + " disdette");
-					System.out.println("Il totale di posti prenotati é ora a: " + nuovoEvento.getnPostiPrenotati());
-
-					continua = true;
-
-					break;
-
-				case "0":
+					nuovoEvento = new Evento(nomeInput, dataEvento, numeroPostiTotaliInput);
 					continua = false;
-					break;
 
-				default:
-					continua = true;
+				} catch (NullPointerException npe) {
+					System.out.println("Errore nella creazione dell'evento: " + npe.getMessage());
 
+				} catch (IllegalArgumentException iae) {
+					System.out.println("Errore nella creazione dell'evento: " + iae.getMessage());
 				}
-			} catch (IllegalArgumentException iae) {
-				System.out.println("Errore: " + iae.getMessage());
-			} catch (Exception e) {
-				System.out.println("Errore, riprovare!");
-			}
 
+			} else if (eventoConferenza.equalsIgnoreCase("2")) {
+
+				System.out.print("Inserisci l'argomento: ");
+				String argomento = scan.nextLine();
+				System.out.println("Inserisci l'oratore");
+				System.out.print("Nome: ");
+				String nomeOratore = scan.nextLine();
+				System.out.print("Cognome: ");
+				String cognomeOratore = scan.nextLine();
+				System.out.println("Titolo di studio: ");
+				String titoloOratore = scan.nextLine();
+
+				try {
+					nuovoOratore = new Oratore(nomeOratore, cognomeOratore, titoloOratore);
+				} catch (NullPointerException npe) {
+					System.out.println("Errore: ");
+				}
+
+				try {
+					nuovaConf = new Conferenza(nomeInput, dataEvento, numeroPostiTotaliInput, argomento, nuovoOratore);
+					continua = false;
+				} catch (NullPointerException npe) {
+					System.out.println("Errore nella creazione dell'evento: " + npe.getMessage());
+
+				} catch (IllegalArgumentException iae) {
+					System.out.println("Errore nella creazione dell'evento: " + iae.getMessage());
+				}
+
+			} else {
+
+				System.out.println("Selezione non valida");
+
+			}
 		} while (continua);
 
-		System.out.println("I posti prenotati sono: " + nuovoEvento.getnPostiPrenotati());
-		int postiDisponibili = nuovoEvento.getnPostiTot() - nuovoEvento.getnPostiPrenotati();
-		System.out.println("I posti disponinbili sono: " + postiDisponibili);
+		if (eventoConferenza.equalsIgnoreCase("1")) {
+			do {
 
+				System.out.println(
+						"Premere \n(1)per fare una prenotazione \n(2)per disdire una prenotazione \n(3)uscire");
+				String sceltaUtente = scan.nextLine();
+
+				try {
+					switch (sceltaUtente) {
+
+					case "1":
+						System.out.println("Quanti posti vuoi prenotare?");
+						int postiPrenot = Integer.parseInt(scan.nextLine());
+
+						for (int i = 0; i < postiPrenot; i++) {
+							nuovoEvento.prenota(i);
+						}
+
+						System.out.println("Hai effettuato " + postiPrenot + " prenotazioni");
+						System.out.println("Il totale di posti prenotati é ora a: " + nuovoEvento.getnPostiPrenotati());
+
+						continua = true;
+
+						break;
+					case "2":
+						System.out.println("Quanti posti vuoi disdire?");
+						int postiDaDisdire = Integer.parseInt(scan.nextLine());
+
+						for (int i = 1; i <= postiDaDisdire; i++) {
+							nuovoEvento.disdici(i);
+						}
+						System.out.println("Hai effettuato " + postiDaDisdire + " disdette");
+						System.out.println("Il totale di posti prenotati é ora a: " + nuovoEvento.getnPostiPrenotati());
+
+						continua = true;
+
+						break;
+
+					case "3":
+						continua = false;
+						break;
+
+					default:
+						System.out.println("Inserimento non valido");
+						continua = true;
+					}
+
+				} catch (IllegalArgumentException iae) {
+					System.out.println("Impossibile effettuare l'azione: " + iae.getMessage());
+				}
+
+			} while (continua);
+
+			System.out.println(nuovoEvento.toString());
+			System.out.println("I posti prenotati sono: " + nuovoEvento.getnPostiPrenotati());
+			int postiDisponibili = nuovoEvento.getnPostiTot() - nuovoEvento.getnPostiPrenotati();
+			System.out.println("I posti disponinbili sono: " + postiDisponibili);
+
+		} else if (eventoConferenza.equalsIgnoreCase("2")) {
+			do {
+
+				System.out.println(
+						"Premere \n(1)per fare una prenotazione \n(2)per disdire una prenotazione \n(3)uscire");
+				String sceltaUtente = scan.nextLine();
+
+				try {
+					switch (sceltaUtente) {
+
+					case "1":
+						System.out.println("Quanti posti vuoi prenotare?");
+						int postiDaPrenotare = Integer.parseInt(scan.nextLine());
+
+						for (int i = 0; i < postiDaPrenotare; i++) {
+							nuovaConf.prenota(i);
+						}
+
+						System.out.println("Hai effettuato " + postiDaPrenotare + " prenotazioni");
+						System.out.println("Il totale di posti prenotati é ora a: " + nuovaConf.getnPostiPrenotati());
+
+						continua = true;
+
+						break;
+					case "2":
+						System.out.println("Quanti posti vuoi disdire?");
+						int postiDaDisdire = Integer.parseInt(scan.nextLine());
+
+						for (int i = 1; i <= postiDaDisdire; i++) {
+							nuovaConf.disdici(i);
+						}
+						System.out.println("Hai effettuato " + postiDaDisdire + " disdette");
+						System.out.println("Il totale di posti prenotati é ora a: " + nuovaConf.getnPostiPrenotati());
+
+						continua = true;
+
+						break;
+
+					case "3":
+						continua = false;
+						break;
+
+					default:
+						System.out.println("Inserimento non valido");
+						continua = true;
+					}
+
+				} catch (IllegalArgumentException iae) {
+					System.out.println("Impossibile effettuare l'azione: " + iae.getMessage());
+				}
+
+			} while (continua);
+
+			System.out.println(nuovaConf.toString());
+			System.out.println("I posti prenotati sono: " + nuovaConf.getnPostiPrenotati());
+			int postiDisponibili = nuovaConf.getnPostiTot() - nuovaConf.getnPostiPrenotati();
+			System.out.println("I posti disponinbili sono: " + postiDisponibili);
+
+		}
 		scan.close();
-	}
 
+	}
 }
